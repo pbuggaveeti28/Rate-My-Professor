@@ -13,61 +13,42 @@ export default function Home() {
   const [loading, setLoading] = useState(false); // Track loading state
 
   const sendMessage = async () => {
-    if (!message.trim()) return; // Prevent sending empty messages
-
     setMessage("");
-    setLoading(true); // Set loading to true when sending the message
-
     setMessages((messages) => [
       ...messages,
       { role: "user", content: message },
       { role: "assistant", content: "" },
     ]);
 
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify([...messages, { role: "user", content: message }]),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const reader = response.body.getReader();
+    const response = fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([...messages, { role: "user", content: message }]),
+    }).then(async (res) => {
+      const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let result = "";
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        result += decoder.decode(value, { stream: true });
+      return reader.read().then(function processText({ done, value }) {
+        if (done) {
+          return result;
+        }
+        const text = decoder.decode(value || new Uint8Array(), {
+          stream: true,
+        });
         setMessages((messages) => {
           let lastMessage = messages[messages.length - 1];
           let otherMessages = messages.slice(0, messages.length - 1);
           return [
             ...otherMessages,
-            { ...lastMessage, content: lastMessage.content + result },
+            { ...lastMessage, content: lastMessage.content + text },
           ];
         });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      // Optionally set an error message to the state and display it
-      setMessages((messages) => [
-        ...messages,
-        {
-          role: "assistant",
-          content: "Sorry, something went wrong. Please try again.",
-        },
-      ]);
-    } finally {
-      setLoading(false); // Reset loading state
-    }
+        return reader.read().then(processText);
+      });
+    });
   };
 
   return (

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { Pinecone } from "@pinecone-database/pinecone";
 import axios from "axios";
 
 const systemPrompt = `
@@ -30,77 +29,55 @@ Begin each interaction by waiting for the user's query about finding a professor
 `;
 
 export async function POST(req) {
-  const data = await req.json();
+  try {
+    const data = await req.json();
 
-  // Initialize Pinecone
-  const pc = new Pinecone({
-    apiKey: process.env.PINECONE_API_KEY,
-  });
-  const index = pc.index("rag").namespace("ns1");
+    console.log("Received Data:", data); // Log received data
 
-  // Hugging Face API details
-  const HF_API_URL =
-    "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"; // Update the model URL as needed
-  const HF_API_KEY = process.env.HF_API_KEY;
+    // OpenRouter API details
+    const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
+    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-  // Function to get embeddings from Hugging Face
-  async function getEmbeddings(text) {
-    try {
-      const response = await axios.post(
-        HF_API_URL,
-        { inputs: text },
-        { headers: { Authorization: `Bearer ${HF_API_KEY}` } }
-      );
-      return response.data; // Adjust based on the actual response format
-    } catch (error) {
-      console.error("Error fetching embeddings from Hugging Face:", error);
-      throw error;
-    }
-  }
-
-  const text = data[data.length - 1].content;
-  const embedding = await getEmbeddings(text);
-
-  // Ensure the embedding is in the correct format and dimension
-  // Replace `embedding` with the actual path to the vector
-  const vector = embedding.vector || embedding[0].vector;
-
-  // Query Pinecone with the embedding
-  const results = await index.query({
-    topK: 5,
-    includeMetadata: true,
-    vector: vector,
-  });
-
-  let resultString = "";
-  results.matches.forEach((match) => {
-    resultString += `
-  Returned Results:
-  Professor: ${match.id}
-  Review: ${match.metadata.stars}
-  Subject: ${match.metadata.subject}
-  Stars: ${match.metadata.stars}
-  \n\n`;
-  });
-
-  const lastMessage = data[data.length - 1];
-  const lastMessageContent = lastMessage.content + resultString;
-  const lastDataWithoutLastMessage = data.slice(0, data.length - 1);
-
-  // Generate response using Hugging Face
-  const hfChatUrl = "https://api-inference.huggingface.co/models/gpt-neo-2.7B"; // Replace with the correct Hugging Face model URL
-  const hfChatResponse = await axios.post(
-    hfChatUrl,
-    {
-      inputs: {
-        prompt: `${systemPrompt}\n\n${lastMessageContent}`,
-        max_tokens: 150,
+    // Fetch response from OpenRouter
+    const response = await axios.post(
+      OPENROUTER_API_URL,
+      {
+        model: "meta-llama/llama-3.1-8b-instruct:free",
+        messages: [
+          {
+            role: "user",
+            content: `${systemPrompt}\n\n${data[data.length - 1].content}`,
+          },
+        ],
       },
-    },
-    { headers: { Authorization: `Bearer ${HF_API_KEY}` } }
-  );
+      {
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-  const responseContent = hfChatResponse.data.choices[0].text;
+    console.log("OpenRouter API Response:", response.data); // Log API response
 
-  return NextResponse.json({ message: responseContent });
+    // Extract and format the response content
+    const responseContent = response.data.choices
+      ? response.data.choices[0].message.content
+      : "No response generated";
+
+    // Format the response content to improve readability
+    const formattedResponse = `
+    Here are some relevant professors based on your query:
+
+    ${responseContent}
+    `;
+
+    return NextResponse.json({ message: formattedResponse });
+  } catch (error) {
+    console.error("Error processing request:", error); // Log errors
+    return NextResponse.json(
+      { error: "Failed to process request." },
+      { status: 500 }
+    );
+  }
 }
