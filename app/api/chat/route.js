@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { Pinecone } from "@pinecone-database/pinecone";
-import axios from "axios"; // Import axios for making requests
+import axios from "axios";
 
 const systemPrompt = `
 You are an AI assistant for a RateMyProfessor-style service. Your role is to help students find professors based on their queries using a Retrieval-Augmented Generation (RAG) system. For each user question, you will provide information on the top 3 most relevant professors.
@@ -41,7 +41,7 @@ export async function POST(req) {
   // Hugging Face API details
   const HF_API_URL =
     "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"; // Update the model URL as needed
-  const HF_API_KEY = process.env.HF_API_KEY; // Ensure you have this in your environment variables
+  const HF_API_KEY = process.env.HF_API_KEY;
 
   // Function to get embeddings from Hugging Face
   async function getEmbeddings(text) {
@@ -51,7 +51,7 @@ export async function POST(req) {
         { inputs: text },
         { headers: { Authorization: `Bearer ${HF_API_KEY}` } }
       );
-      return response.data[0]; // Adjust based on the actual response format
+      return response.data; // Adjust based on the actual response format
     } catch (error) {
       console.error("Error fetching embeddings from Hugging Face:", error);
       throw error;
@@ -61,11 +61,15 @@ export async function POST(req) {
   const text = data[data.length - 1].content;
   const embedding = await getEmbeddings(text);
 
+  // Ensure the embedding is in the correct format and dimension
+  // Replace `embedding` with the actual path to the vector
+  const vector = embedding.vector || embedding[0].vector;
+
   // Query Pinecone with the embedding
   const results = await index.query({
     topK: 5,
     includeMetadata: true,
-    vector: embedding,
+    vector: vector,
   });
 
   let resultString = "";
@@ -90,7 +94,7 @@ export async function POST(req) {
     {
       inputs: {
         prompt: `${systemPrompt}\n\n${lastMessageContent}`,
-        max_tokens: 150, // Adjust based on your needs
+        max_tokens: 150,
       },
     },
     { headers: { Authorization: `Bearer ${HF_API_KEY}` } }
