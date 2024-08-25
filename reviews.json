@@ -1,0 +1,124 @@
+{
+    "reviews": [
+      {
+        "professor": "Dr. Emma Thompson",
+        "subject": "Psychology",
+        "stars": 4,
+        "review": "Engaging lectures and thought-provoking assignments. Highly recommended!"
+      },
+      {
+        "professor": "Prof. Michael Chen",
+        "subject": "Computer Science",
+        "stars": 5,
+        "review": "Brilliant instructor. Makes complex concepts easy to understand."
+      },
+      {
+        "professor": "Dr. Sarah Johnson",
+        "subject": "Biology",
+        "stars": 3,
+        "review": "Knowledgeable, but lectures can be dry at times."
+      },
+      {
+        "professor": "Prof. David Williams",
+        "subject": "History",
+        "stars": 4,
+        "review": "Passionate about the subject. Brings historical events to life."
+      },
+      {
+        "professor": "Dr. Olivia Martinez",
+        "subject": "Physics",
+        "stars": 5,
+        "review": "Challenging course, but Dr. Martinez explains concepts clearly."
+      },
+      {
+        "professor": "Prof. James Lee",
+        "subject": "Economics",
+        "stars": 2,
+        "review": "Difficult to follow. More real-world examples would help."
+      },
+      {
+        "professor": "Dr. Emily Brown",
+        "subject": "Literature",
+        "stars": 5,
+        "review": "Inspiring teacher. Fosters great class discussions."
+      },
+      {
+        "professor": "Prof. Robert Taylor",
+        "subject": "Mathematics",
+        "stars": 3,
+        "review": "Solid grasp of material, but could improve teaching methods."
+      },
+      {
+        "professor": "Dr. Lisa Wong",
+        "subject": "Chemistry",
+        "stars": 4,
+        "review": "Challenging but fair. Always available for extra help."
+      },
+      {
+        "professor": "Prof. Daniel Garcia",
+        "subject": "Political Science",
+        "stars": 5,
+        "review": "Engaging lecturer. Encourages critical thinking."
+      },
+      {
+        "professor": "Dr. Rachel Green",
+        "subject": "Environmental Science",
+        "stars": 4,
+        "review": "Passionate about the subject. Field trips were a great addition."
+      },
+      {
+        "professor": "Prof. Thomas Anderson",
+        "subject": "Philosophy",
+        "stars": 3,
+        "review": "Interesting topics, but sometimes hard to follow."
+      },
+      {
+        "professor": "Dr. Jessica Patel",
+        "subject": "Sociology",
+        "stars": 5,
+        "review": "Excellent teacher. Makes you think about society in new ways."
+      },
+      {
+        "professor": "Prof. William Smith",
+        "subject": "Art History",
+        "stars": 4,
+        "review": "Vast knowledge of the subject. Slides could be better organized."
+      },
+      {
+        "professor": "Dr. Amanda Clark",
+        "subject": "Linguistics",
+        "stars": 5,
+        "review": "Fascinating course. Dr. Clark is an expert in her field."
+      },
+      {
+        "professor": "Prof. Christopher Lee",
+        "subject": "Business Administration",
+        "stars": 2,
+        "review": "Lectures are monotonous. Needs more interactive elements."
+      },
+      {
+        "professor": "Dr. Sophia Rodriguez",
+        "subject": "Neuroscience",
+        "stars": 4,
+        "review": "Complex subject made accessible. Great lab sessions."
+      },
+      {
+        "professor": "Prof. Jonathan White",
+        "subject": "Music Theory",
+        "stars": 3,
+        "review": "Knowledgeable but strict. Be prepared for a demanding course."
+      },
+      {
+        "professor": "Dr. Laura Miller",
+        "subject": "Anthropology",
+        "stars": 5,
+        "review": "Engaging lecturer. Field work was a valuable experience."
+      },
+      {
+        "professor": "Prof. Kevin Zhang",
+        "subject": "Statistics",
+        "stars": 4,
+        "review": "Clear explanations of difficult concepts. Helpful office hours."
+      }
+    ]
+  }
